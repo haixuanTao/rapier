@@ -346,10 +346,10 @@ impl<'a> QueryPipeline<'a> {
     pub fn project_point(
         &self,
         point: Vector,
-        _max_dist: Real,
+        max_dist: Real,
         solid: bool,
     ) -> Option<(ColliderHandle, PointProjection)> {
-        self.id_to_handle(CompositeShapeRef(self).project_local_point(point, solid))
+        self.id_to_handle(CompositeShapeRef(self).project_local_point(point, max_dist, solid)?)
     }
 
     /// Returns ALL colliders that contain the given point.
@@ -405,7 +405,8 @@ impl<'a> QueryPipeline<'a> {
         &self,
         point: Vector,
     ) -> Option<(ColliderHandle, PointProjection, FeatureId)> {
-        let (id, (proj, feat)) = CompositeShapeRef(self).project_local_point_and_get_feature(point);
+        let (id, (proj, feat)) =
+            CompositeShapeRef(self).project_local_point_and_get_feature(point, Real::MAX)?;
         let handle = self.colliders.get_unknown_gen(id)?.1;
         Some((handle, proj, feat))
     }
